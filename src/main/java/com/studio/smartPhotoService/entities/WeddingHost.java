@@ -1,13 +1,13 @@
 package com.studio.smartPhotoService.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.studio.smartPhotoService.exceptions.ShouldNotOccurException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import java.time.LocalDateTime;
+import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /*
 WeddingHost Entity that holds the details of a Wedding Host
@@ -20,23 +20,36 @@ This Object holds the data fetched from wedding_host table
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class WeddingHost {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long weddingHostId;
+    private Long weddingHostId;
 
     @NotEmpty(message = "Wedding host's name must not be empty")
-    public String weddingHostName;
+    private String weddingHostName;
 
     @NotEmpty(message = "Wedding host's email must not be empty")
-    public String weddingHostEmailId;
+    private String weddingHostEmailId;
 
-    @NotNull(message = "Wedding date and time must not be null")
-    public LocalDateTime weddingDateAndTime;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "weddingHost")
+    @JsonManagedReference("WeddingHostWeddingObjects")
+    private Set<Wedding> createdWeddingSet = new HashSet<>();
 
-    @NotEmpty(message = "Wedding bride and groom name must not be empty")
-    public String brideWedsGroom;
-
-    public String uniqueId;
+//    public void addWeddingObj(Wedding wedding) {
+//        if(createdWeddingSet.contains(wedding)){
+//            throw new ShouldNotOccurException("WeddingHost already has this %s wedding in its Created Wedding Set".formatted(wedding.getWeddingTitle()));
+//        }
+//        this.createdWeddingSet.add(wedding);
+//        wedding.setWeddingHost(this); // Set the back reference
+//    }
+//
+//    public void removeWeddingObj(Wedding wedding) {
+//        if(!createdWeddingSet.contains(wedding)){
+//            throw new ShouldNotOccurException("WeddingHost does not contains this %s wedding in its Created Wedding Set".formatted(wedding.getWeddingTitle()));
+//        }
+//        this.createdWeddingSet.remove(wedding);
+//        wedding.setWeddingHost(null); // Remove the back reference
+//    }
 
 }

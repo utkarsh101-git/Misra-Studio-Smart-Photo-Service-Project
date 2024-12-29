@@ -49,7 +49,26 @@ public class Wedding {
 
     // wedding can have multiple wedding Members connected to it
     // may need Managed and back reference in future
-    @ManyToMany
+    @ManyToMany(mappedBy = "attendsWeddingSet")
     private Set<WeddingMember> weddingMembers = new HashSet<>();
 
+    /**
+     * Helper method to link {@link WeddingMember} and {@link Wedding}, helps in syncing
+     *
+     * @param weddingMember
+     */
+    public void addWeddingMember(WeddingMember weddingMember) {
+        weddingMembers.add(weddingMember);
+        weddingMember.getAttendsWeddingSet().add(this); // Maintain synchronization
+    }
+
+    /**
+     * Helper method to de-link {@link WeddingMember} and {@link Wedding}, helps in syncing
+     *
+     * @param weddingMember
+     */
+    public void removeWeddingMember(WeddingMember weddingMember) {
+        weddingMembers.remove(weddingMember);
+        weddingMember.getAttendsWeddingSet().remove(this); // Maintain synchronization
+    }
 }

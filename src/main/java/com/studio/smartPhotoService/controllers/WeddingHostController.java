@@ -1,8 +1,10 @@
 package com.studio.smartPhotoService.controllers;
 
+import com.studio.smartPhotoService.MapperUtils.WeddingHostMapper;
 import com.studio.smartPhotoService.entities.Wedding;
 import com.studio.smartPhotoService.entities.WeddingHost;
 import com.studio.smartPhotoService.services.WeddingHostService;
+import com.studio.smartPhotoService.views.WeddingHostResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /*
     This controller handles all request for CRUD related operations for Wedding Host
@@ -27,9 +31,9 @@ public class WeddingHostController {
     delegates the request to WeddingHostService
      */
     @GetMapping("/get-host-byId/{weddingHostId}")
-    public ResponseEntity<WeddingHost> getWeddingHostById(@PathVariable("weddingHostId") Long weddingHostId) {
+    public ResponseEntity<WeddingHostResponseDTO> getWeddingHostById(@PathVariable("weddingHostId") Long weddingHostId) {
         WeddingHost fetechedWeddingHost = weddingHostService.getWeddingHostById(weddingHostId);
-        return ResponseEntity.status(HttpStatus.OK).body(fetechedWeddingHost);
+        return ResponseEntity.status(HttpStatus.OK).body(WeddingHostMapper.mapToDTO(fetechedWeddingHost));
     }
 
     /*
@@ -37,8 +41,8 @@ public class WeddingHostController {
     delegates the request to WeddingHostService
      */
     @GetMapping("/get-all-host")
-    public ResponseEntity<List<WeddingHost>> getAllWeddingHost() {
-        return ResponseEntity.status(HttpStatus.OK).body(this.weddingHostService.getAllWeddingHost());
+    public ResponseEntity<List<WeddingHostResponseDTO>> getAllWeddingHost() {
+        return ResponseEntity.status(HttpStatus.OK).body(this.weddingHostService.getAllWeddingHost().stream().map(weddingHost -> WeddingHostMapper.mapToDTO(weddingHost)).collect(Collectors.toList()));
     }
 
 
@@ -46,10 +50,10 @@ public class WeddingHostController {
     handles request for creating a new WeddingHost
     delegates the request to WeddingHostService
      */
-    @PostMapping(path = "/create-new-host", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<WeddingHost> createWeddingHost(@Valid @RequestBody WeddingHost weddingHost) {
+    @PostMapping(path = "/create-new-host", consumes = "application/json")
+    public ResponseEntity<WeddingHostResponseDTO> createWeddingHost(@Valid @RequestBody WeddingHost weddingHost) {
         WeddingHost fetechedWeddingHost = weddingHostService.createWeddingHost(weddingHost);
-        return ResponseEntity.status(HttpStatus.CREATED).body(fetechedWeddingHost);
+        return ResponseEntity.status(HttpStatus.CREATED).body(WeddingHostMapper.mapToDTO(fetechedWeddingHost));
     }
 
 
@@ -58,8 +62,8 @@ public class WeddingHostController {
      * delegates the request to WeddingHostService
      */
     @PutMapping("/add-new-wedding/{weddingHostId}")
-    public ResponseEntity<WeddingHost> addNewWeddingForWeddingHost(@Valid @RequestBody Wedding wedding, @PathVariable("weddingHostId") Long weddingHostId) {
-        return ResponseEntity.status(HttpStatus.OK).body(this.weddingHostService.addNewWeddingObjectToWeddingHost(wedding, weddingHostId));
+    public ResponseEntity<WeddingHostResponseDTO> addNewWeddingForWeddingHost(@Valid @RequestBody Wedding wedding, @PathVariable("weddingHostId") Long weddingHostId) {
+        return ResponseEntity.status(HttpStatus.OK).body(WeddingHostMapper.mapToDTO(this.weddingHostService.addNewWeddingObjectToWeddingHost(wedding, weddingHostId)));
 
     }
 
@@ -78,8 +82,8 @@ public class WeddingHostController {
      */
 
     @PutMapping("/update-wedding-host/{weddingHostId}")
-    public ResponseEntity<WeddingHost> updateExistingWeddingHostById(@RequestBody WeddingHost weddingHost, @PathVariable("weddingHostId") Long weddingHostId) {
-        return ResponseEntity.status(HttpStatus.OK).body(this.weddingHostService.updateWeddingHost(weddingHost, weddingHostId));
+    public ResponseEntity<WeddingHostResponseDTO> updateExistingWeddingHostById(@RequestBody WeddingHost weddingHost, @PathVariable("weddingHostId") Long weddingHostId) {
+        return ResponseEntity.status(HttpStatus.OK).body(WeddingHostMapper.mapToDTO(this.weddingHostService.updateWeddingHost(weddingHost, weddingHostId)));
 
     }
 
@@ -108,6 +112,10 @@ public class WeddingHostController {
 
     }
 
+    @GetMapping("/get-all-weddings-byId/{weddingHostId}")
+    public ResponseEntity<Set<Wedding>> getAllWeddingsByHostId(@PathVariable("weddingHostId") Long weddingHostId) {
+        return ResponseEntity.status(HttpStatus.OK).body(weddingHostService.getAllWeddingsByHostId(weddingHostId));
+    }
 
     /**
      * Updates Details of single WeddingObject via a WeddingHost
@@ -120,8 +128,8 @@ public class WeddingHostController {
      */
 
     @PutMapping("/update-wedding/{weddingHostId}")
-    public ResponseEntity<WeddingHost> updateExistingWeddingObjectByGivenWeddingHostId(@RequestBody Wedding wedding, @PathVariable("weddingHostId") Long weddingHostId) {
-        return ResponseEntity.status(HttpStatus.OK).body(this.weddingHostService.updateWeddingObjectByGivenWeddingHostId(wedding, weddingHostId));
+    public ResponseEntity<WeddingHostResponseDTO> updateExistingWeddingObjectByGivenWeddingHostId(@RequestBody Wedding wedding, @PathVariable("weddingHostId") Long weddingHostId) {
+        return ResponseEntity.status(HttpStatus.OK).body(WeddingHostMapper.mapToDTO(this.weddingHostService.updateWeddingObjectByGivenWeddingHostId(wedding, weddingHostId)));
 
     }
 

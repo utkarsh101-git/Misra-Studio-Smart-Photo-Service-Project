@@ -25,10 +25,9 @@ public class SmartPhotoServiceExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(SmartPhotoServiceExceptionHandler.class);
 
-    @ExceptionHandler({ShouldNotOccurException.class, WeddingHostAlreadyExists.class, WeddingObjectAlreadyExistsException.class})
+    @ExceptionHandler({ShouldNotOccurException.class, WeddingHostAlreadyExists.class, WeddingObjectAlreadyExistsException.class, RuntimeException.class})
     public ResponseEntity<?> allExceptionHandler(RuntimeException e) {
-        logger.info("this should not occur");
-        logger.info(e.getMessage());
+        logger.error("this should not occur", e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 
@@ -49,8 +48,7 @@ public class SmartPhotoServiceExceptionHandler {
 
     @ExceptionHandler({WeddingHostDoesNotExistException.class, WeddingMemberDoesNotExistsException.class, WeddingObjectDoesNotExistsException.class})
     public ResponseEntity<?> weddingHostDoesNotExistHandler(RuntimeException e) {
-        logger.error("Exception occurred When Particular Object is not Found ");
-        logger.error(e.getMessage());
+        logger.error("Exception occurred When Particular Object is not Found", e);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 }

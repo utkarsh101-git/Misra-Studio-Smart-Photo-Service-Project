@@ -8,14 +8,16 @@ import com.studio.smartPhotoService.exceptions.WeddingHostDoesNotExistException;
 import com.studio.smartPhotoService.exceptions.WeddingObjectAlreadyExistsException;
 import com.studio.smartPhotoService.exceptions.WeddingObjectDoesNotExistsException;
 import com.studio.smartPhotoService.repository.WeddingHostRepo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 /*
 This service handles all request delegated from WeddingHostController
@@ -25,7 +27,7 @@ Service majorly handles CRUD operation for wedding host
 @Service
 public class WeddingHostService {
 
-    Logger logger = Logger.getLogger(WeddingHostService.class.getName());
+    Logger logger = LoggerFactory.getLogger(WeddingHostService.class);
     @Autowired
     private WeddingHostRepo weddingHostRepo;
 
@@ -85,6 +87,7 @@ public class WeddingHostService {
                 // Create Fresh WeddingObject
                 newWeddingObject.setWeddingUniqueCode(UUID.randomUUID().toString());
                 weddingHost.getCreatedWeddingSet().add(newWeddingObject);
+                newWeddingObject.setWeddingHost(weddingHost);
                 return this.weddingHostRepo.save(weddingHost);
             } else {
                 // else Check code already exist or not
@@ -98,6 +101,7 @@ public class WeddingHostService {
                 catch (WeddingObjectDoesNotExistsException e) {
                     newWeddingObject.setWeddingUniqueCode(UUID.randomUUID().toString());
                     weddingHost.getCreatedWeddingSet().add(newWeddingObject);
+                    newWeddingObject.setWeddingHost(weddingHost);
                     return this.weddingHostRepo.save(weddingHost);
                 }
             }
@@ -154,10 +158,14 @@ public class WeddingHostService {
             this.weddingHostRepo.delete(existingWeddingHost);
             isEntityDeleted = true;
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "An exception: not able to delete Existing Wedding Host", e);
+            logger.error("An exception: not able to delete Existing Wedding Host", e);
         }
         return isEntityDeleted;
 
+    }
+
+    public Set<Wedding> getAllWeddingsByHostId(Long weddingHostId) {
+        return this.getWeddingHostById(weddingHostId).getCreatedWeddingSet();
     }
 
 

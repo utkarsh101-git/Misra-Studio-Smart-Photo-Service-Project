@@ -2,43 +2,43 @@ package com.studio.smartPhotoService.MapperUtils;
 
 import com.studio.smartPhotoService.entities.Wedding;
 import com.studio.smartPhotoService.entities.WeddingMember;
-import com.studio.smartPhotoService.views.WeddingMemberDTO;
+import com.studio.smartPhotoService.views.WeddingMemberCreateDTO;
+import com.studio.smartPhotoService.views.WeddingMemberResponseDTO;
 
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
 public class WeddingMemberMapper {
-    public static WeddingMember mapToEntity(WeddingMemberDTO weddingMemberDTO) {
+    public static WeddingMember mapToEntity(WeddingMemberCreateDTO weddingMemberCreateDTO) {
         WeddingMember newWeddingMember = new WeddingMember();
-        newWeddingMember.setWeddingMemberId(weddingMemberDTO.getWeddingMemberId());
-        newWeddingMember.setWeddingMemberName(weddingMemberDTO.getWeddingMemberName());
-        newWeddingMember.setWeddingMemberEmailId(weddingMemberDTO.getWeddingMemberEmailId());
-        newWeddingMember.setWeddingMemberRelation(weddingMemberDTO.getWeddingMemberRelation());
+        newWeddingMember.setWeddingMemberId(weddingMemberCreateDTO.getWeddingMemberId());
+        newWeddingMember.setWeddingMemberName(weddingMemberCreateDTO.getWeddingMemberName());
+        newWeddingMember.setWeddingMemberEmailId(weddingMemberCreateDTO.getWeddingMemberEmailId());
+        newWeddingMember.setWeddingMemberRelation(weddingMemberCreateDTO.getWeddingMemberRelation());
 
         // converting Strings to Wedding object
-        if (!weddingMemberDTO.getAttendsWeddingSet().isEmpty()) {
-            newWeddingMember.setAttendsWeddingSet(weddingMemberDTO.getAttendsWeddingSet().stream().map(code -> {
+        if (!weddingMemberCreateDTO.getAttendsWeddingSet().isEmpty()) {
+            newWeddingMember.setAttendsWeddingSet(weddingMemberCreateDTO.getAttendsWeddingSet().stream().map(code -> {
                 Wedding wedding = new Wedding();
                 wedding.setWeddingUniqueCode(code);
                 return wedding;
             }).collect(Collectors.toSet()));
         }
 
-        newWeddingMember.setWeddingMemberImagePathList(weddingMemberDTO.getWeddingMemberImagePathList());
+        newWeddingMember.setWeddingMemberImagePathList(weddingMemberCreateDTO.getWeddingMemberImagePathList());
 
 
         return newWeddingMember;
     }
 
-    public static WeddingMemberDTO mapToDto(WeddingMember weddingMember) {
+    public static WeddingMemberResponseDTO mapToDto(WeddingMember weddingMember) {
 
-        return new WeddingMemberDTO(
+        return new WeddingMemberResponseDTO(
                 weddingMember.getWeddingMemberId(),
                 weddingMember.getWeddingMemberName(),
                 weddingMember.getWeddingMemberEmailId(),
                 weddingMember.getWeddingMemberRelation(),
-                weddingMember.getAttendsWeddingSet().isEmpty() ? new HashSet<>() :
-                        weddingMember.getAttendsWeddingSet().stream().map(Wedding::getWeddingUniqueCode).collect(Collectors.toSet()),
+                weddingMember.getAttendsWeddingSet().isEmpty() ? new HashSet<>() : weddingMember.getAttendsWeddingSet().stream().map(wedding -> WeddingMapper.mapToDTO(wedding)).collect(Collectors.toSet()),
                 weddingMember.getWeddingMemberImagePathList()
         );
 

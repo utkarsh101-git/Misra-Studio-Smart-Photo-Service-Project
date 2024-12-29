@@ -43,4 +43,24 @@ public class WeddingMember {
     @ElementCollection
     private List<String> weddingMemberImagePathList = new ArrayList<>();
 
+    /**
+     * Helper method to link {@link WeddingMember} and {@link Wedding}, helps in syncing
+     *
+     * @param wedding
+     */
+    public void addWedding(Wedding wedding) {
+        attendsWeddingSet.add(wedding);
+        wedding.getWeddingMembers().add(this); // Maintain synchronization
+    }
+
+    /**
+     * Helper method to de-link {@link WeddingMember} and {@link Wedding}, helps in syncing
+     *
+     * @param wedding
+     */
+    public void removeWedding(Wedding wedding) {
+        attendsWeddingSet.remove(wedding);
+        wedding.getWeddingMembers().remove(this); // Maintain synchronization
+    }
+
 }

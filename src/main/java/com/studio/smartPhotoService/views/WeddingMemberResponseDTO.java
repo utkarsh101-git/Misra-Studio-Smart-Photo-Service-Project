@@ -14,8 +14,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class WeddingMemberDTO {
-
+public class WeddingMemberResponseDTO {
     private Long weddingMemberId;
 
     @NotEmpty
@@ -27,9 +26,8 @@ public class WeddingMemberDTO {
     // Member Relation can be empty of null also
     private String weddingMemberRelation;
 
-    private Set<String> attendsWeddingSet = new HashSet<>();
+    private Set<WeddingDTO> attendsWeddingSet = new HashSet<>();
 
     // can be null initially , it may have some values after photos are clicked
     private List<String> weddingMemberImagePathList;
-
 }

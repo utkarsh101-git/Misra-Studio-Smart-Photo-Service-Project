@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface WeddingRepo extends JpaRepository<Wedding, Long> {
-    List<Wedding> findByWeddingHost(WeddingHost weddingHost);
+    Optional<Wedding> findByWeddingIdAndIsDeletedFalse(Long weddingId);
+    
+    List<Wedding> findByWeddingHostAndIsDeletedFalse(WeddingHost weddingHost);
 
-    Optional<Wedding> findByWeddingUniqueCode(String code);
+    Optional<Wedding> findByWeddingUniqueCodeAndIsDeletedFalse(String code);
 }

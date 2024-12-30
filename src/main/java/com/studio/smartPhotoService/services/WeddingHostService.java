@@ -38,7 +38,7 @@ public class WeddingHostService {
     This method finds all email id and wraps them inside a list and returns it
      */
     public List<String> getAllWeddingHostEmails() {
-        return this.weddingHostRepo.findAll().stream()
+        return this.weddingHostRepo.findAllByIsDeletedFalse().stream()
                 .map(WeddingHost::getWeddingHostEmailId).toList();
     }
 
@@ -50,9 +50,9 @@ public class WeddingHostService {
      */
     public WeddingHost createWeddingHost(WeddingHost weddingHost) {
 
-        Optional<String> optional = this.getAllWeddingHostEmails().stream().filter(emails -> emails.equals(weddingHost.getWeddingHostEmailId())).findAny();
-        String foundEmail = optional.orElse(null);
-        if (foundEmail != null) {
+        Optional<WeddingHost> optional = this.weddingHostRepo.findByWeddingHostEmailIdAndIsDeletedFalse(weddingHost.getWeddingHostEmailId());
+        WeddingHost existingWeddingHost = optional.orElse(null);
+        if (existingWeddingHost != null) {
             throw new WeddingHostAlreadyExists("Wedding Host already exists - email Id of Wedding Host already exists");
         }
 
@@ -67,14 +67,14 @@ public class WeddingHostService {
     }
 
     public WeddingHost getWeddingHostById(Long weddingHostId) {
-        Optional<WeddingHost> byId = this.weddingHostRepo.findById(weddingHostId);
+        Optional<WeddingHost> byId = this.weddingHostRepo.findByWeddingHostIdAndIsDeletedFalse(weddingHostId);
         WeddingHost weddingHost = byId.orElseThrow(() -> new WeddingHostDoesNotExistException("Wedding Host does not exist for this given %s Id".formatted(weddingHostId)));
 
         return weddingHost;
     }
 
     public List<WeddingHost> getAllWeddingHost() {
-        return this.weddingHostRepo.findAll();
+        return this.weddingHostRepo.findAllByIsDeletedFalse();
     }
 
     public WeddingHost addNewWeddingObjectToWeddingHost(Wedding newWeddingObject, Long weddingHostId) {
@@ -138,7 +138,10 @@ public class WeddingHostService {
 
         // for WeddingObject Set we will delete previous WeddingObject and then add the new WeddingObject Set
         if (updatedWeddingHost.getCreatedWeddingSet() != null) {
-            olderWeddingHost.getCreatedWeddingSet().forEach(wedding -> wedding.setWeddingHost(null));
+            olderWeddingHost.getCreatedWeddingSet().forEach(wedding -> {
+                wedding.setWeddingHost(null);
+                wedding.setDeleted(true);
+            });
             olderWeddingHost.getCreatedWeddingSet().clear();
             olderWeddingHost.setCreatedWeddingSet(updatedWeddingHost.getCreatedWeddingSet());
         }
@@ -150,12 +153,18 @@ public class WeddingHostService {
     public boolean deleteWeddingHost(Long weddingHostId) {
         WeddingHost existingWeddingHost = this.getWeddingHostById(weddingHostId);
         if (existingWeddingHost.getCreatedWeddingSet() != null) {
-            existingWeddingHost.getCreatedWeddingSet().forEach(wedding -> wedding.setWeddingHost(null));
+            /* deleting the reference and Wedding object */
+            existingWeddingHost.getCreatedWeddingSet().forEach(wedding -> {
+                wedding.setWeddingHost(null);
+                wedding.setDeleted(true);
+            });
             existingWeddingHost.getCreatedWeddingSet().clear();
         }
         boolean isEntityDeleted = false;
         try {
-            this.weddingHostRepo.delete(existingWeddingHost);
+            // delete Wedding Host
+            existingWeddingHost.setDeleted(true);
+            this.weddingHostRepo.save(existingWeddingHost);
             isEntityDeleted = true;
         } catch (Exception e) {
             logger.error("An exception: not able to delete Existing Wedding Host", e);

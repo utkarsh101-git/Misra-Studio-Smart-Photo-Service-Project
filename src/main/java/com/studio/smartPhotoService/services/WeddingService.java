@@ -18,16 +18,16 @@ public class WeddingService {
 
 
     public List<Wedding> getWeddingForGivenWeddingHost(WeddingHost weddingHost) {
-        return this.weddingRepo.findByWeddingHost(weddingHost);
+        return this.weddingRepo.findByWeddingHostAndIsDeletedFalse(weddingHost);
     }
 
     public Wedding getWeddingForGivenWeddingCode(String code) {
-        Optional<Wedding> byWeddingUniqueCode = this.weddingRepo.findByWeddingUniqueCode(code);
+        Optional<Wedding> byWeddingUniqueCode = this.weddingRepo.findByWeddingUniqueCodeAndIsDeletedFalse(code);
         return byWeddingUniqueCode.orElseThrow(() -> new WeddingObjectDoesNotExistsException("Wedding Object does not exist with code %s".formatted(code)));
     }
 
     public Wedding getWeddingByWeddingId(Long weddingId) {
-        return this.weddingRepo.findById(weddingId).orElseThrow(() -> new WeddingObjectDoesNotExistsException("Wedding Object with this %s wedding Id does not exists".formatted(weddingId)));
+        return this.weddingRepo.findByWeddingIdAndIsDeletedFalse(weddingId).orElseThrow(() -> new WeddingObjectDoesNotExistsException("Wedding Object with this %s wedding Id does not exists".formatted(weddingId)));
     }
 
 }

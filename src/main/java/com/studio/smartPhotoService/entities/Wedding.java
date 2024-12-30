@@ -52,6 +52,9 @@ public class Wedding {
     @ManyToMany(mappedBy = "attendsWeddingSet")
     private Set<WeddingMember> weddingMembers = new HashSet<>();
 
+    // If a Data is deleted by user isDeleted will become true, avoids data loss
+    private boolean isDeleted = false;
+
     /**
      * Helper method to link {@link WeddingMember} and {@link Wedding}, helps in syncing
      *

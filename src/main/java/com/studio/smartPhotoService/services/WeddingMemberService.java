@@ -48,7 +48,7 @@ public class WeddingMemberService {
     }
 
     public WeddingMember getWeddingMemberById(Long weddingMemberId) {
-        return this.weddingMemberRepo.findById(weddingMemberId).orElseThrow(() -> new WeddingMemberDoesNotExistsException("Wedding member with Id %s does not exists".formatted(weddingMemberId)));
+        return this.weddingMemberRepo.findByWeddingMemberIdAndIsDeletedFalse(weddingMemberId).orElseThrow(() -> new WeddingMemberDoesNotExistsException("Wedding member with Id %s does not exists".formatted(weddingMemberId)));
     }
 
     public WeddingMember registerToWeddingObjectByGivenId(Long weddingMemberId, String uniqueCode) {
@@ -187,7 +187,9 @@ public class WeddingMemberService {
         // remove references from every Wedding Object present in WeddingMember
         weddingMember.getAttendsWeddingSet().forEach(wedding -> wedding.removeWeddingMember(weddingMember));
 
-        this.weddingMemberRepo.delete(weddingMember);
+        // delete wedding Member
+        weddingMember.setDeleted(true);
+        this.weddingMemberRepo.save(weddingMember);
         return true;
     }
 }

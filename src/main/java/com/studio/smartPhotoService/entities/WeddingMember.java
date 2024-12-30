@@ -43,6 +43,10 @@ public class WeddingMember {
     @ElementCollection
     private List<String> weddingMemberImagePathList = new ArrayList<>();
 
+    // If a Data is deleted by user isDeleted will become true, avoids data loss
+    private boolean isDeleted = false;
+
+
     /**
      * Helper method to link {@link WeddingMember} and {@link Wedding}, helps in syncing
      *

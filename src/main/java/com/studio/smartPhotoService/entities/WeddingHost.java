@@ -35,5 +35,8 @@ public class WeddingHost {
     @JsonManagedReference("WeddingHostWeddingObjects")
     private Set<Wedding> createdWeddingSet = new HashSet<>();
 
+    // If a Data is deleted by user isDeleted will become true, avoids data loss
+    private boolean isDeleted = false;
+
 
 }
